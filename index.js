@@ -107,7 +107,7 @@ function handleMove(request, response) {
   //this should be a*?
   var closestFood = findClosestFood(food);
   
-  var tempMoveFood = aStar(grid, snake[0], closestFood);
+  var tempMoveFood = finder.findPath(snake[0].x, closestFood.x, closestFood.y, grid);
   
   //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
   //40 is arbitrary we can change
@@ -117,8 +117,7 @@ function handleMove(request, response) {
   
   //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
   //if there is, then make the best move to get closer to your tail.
-  var tempMoveTail = finder.findPath(bodyData[0].x, bodyData[0].y, bodyData[bodyData.length - 1].x, bodyData[bodyData.length - 1].y, gridBackup);
-      aStar(grid, snake[0], snake[snake.length - 1]);
+  var tempMoveTail = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, grid);
   if (tempMoveTail != null){
     return moveToRequest(tempMoveTail);
   }
