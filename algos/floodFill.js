@@ -23,7 +23,8 @@ function floodFill(x, y, prevColor, replacementColor){
     if (x<0 || x >=size || y<0 || y>=size){
         return;
     } 
-
+    //TODO :: change color of current position
+    
     //directions
     floodFill(x+1,y,prevColor,replacementColor);
     floodFill(x-1,y,prevColor,replacementColor);

@@ -14,7 +14,6 @@ var snakeBody = {
 }
 
 
-
 //might be added to index.js with aStar algo
 function pathToTail(data, gridBackup, possibleMoves) {
 
