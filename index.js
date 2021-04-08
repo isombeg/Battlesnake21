@@ -1,5 +1,8 @@
 const bodyParser = require('body-parser')
 const express = require('express')
+const PF = require('pathfinding');
+
+<script type="text/javascript" src="path/to/pathfinding-browser.min.js"></script>
 
 const PORT = process.env.PORT || 3000
 
@@ -44,7 +47,10 @@ function handleMove(request, response) {
   var generatedMove = 'up';
   var possibleMoves = ['up', 'down', 'left', 'right'];
   
-  var grid = createMap(request.board.width, request.board.height);
+  //var grid = createMap(request.board.width, request.board.height);
+  var grid = new PF.Grid(request.board.width, request.board.height);
+  var finder = new PF.AStarFinder();
+  
   var snake = [];
   var food = [];
   
@@ -111,7 +117,8 @@ function handleMove(request, response) {
   
   //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
   //if there is, then make the best move to get closer to your tail.
-  var tempMoveTail = aStar(grid, snake[0], snake[snake.length - 1]);
+  var tempMoveTail = finder.findPath(bodyData[0].x, bodyData[0].y, bodyData[bodyData.length - 1].x, bodyData[bodyData.length - 1].y, gridBackup);
+      aStar(grid, snake[0], snake[snake.length - 1]);
   if (tempMoveTail != null){
     return moveToRequest(tempMoveTail);
   }
