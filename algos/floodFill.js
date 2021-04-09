@@ -19,7 +19,7 @@ function floodFill(possibleMoves, you, seed, result, getter, directions) {
         if (move === 'up') {
             result = floodFill({
                 getter: getter,
-                seed: [body[0].x,body[0].y-1],
+                seed: [you.body[0].x,you.body[0].y-1],
                 onFlood: function (x, y) {
                     flood.push(seed);
                 }
@@ -28,7 +28,7 @@ function floodFill(possibleMoves, you, seed, result, getter, directions) {
         } else if (move === 'down') {
             result = floodFill({
                 getter: getter,
-                seed: [body[0].x,body[0].y+1],
+                seed: [you.body[0].x,you.body[0].y+1],
                 onFlood: function (x, y) {
                     flood.push(seed);
                 }
@@ -37,17 +37,16 @@ function floodFill(possibleMoves, you, seed, result, getter, directions) {
         } else if (move === 'left') {
             result = floodFill({
                 getter: getter,
-                seed:[body[0].x-1,body[0].y],
+                seed:[you.body[0].x-1,you.body[0].y],
                 onFlood: function (x, y) {
                     flood.push(seed);
                 }
             });
             directions.push({move,flood});
         } else if (move === 'right') {
-            seed = [body[0].x + 1, body[0].y];
             result = floodFill({
                 getter: getter,
-                seed: [body[0].x+1,body[0].y],
+                seed: [you.body[0].x+1,you.body[0].y],
                 onFlood: function (x, y) {
                     flood.push(seed);
                 }
