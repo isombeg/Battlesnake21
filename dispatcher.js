@@ -11,15 +11,16 @@ exports.dispatcher = (game, turn, board, you) => {
     var finder = new PF.AStarFinder();
     
     var snake = you.body;
-    var food = [];
+    var food = board.food;
 
     //need to add stuff
-    modifyGrid(grid);
+    addToGrid(grid);
 
     //tail trimmed board
     var tailTrimGrid = tailTrim(game, turn, board, you);
+    var finalGrid = headAppend(grid);
 
-    var dangerousFlag = false;
+    //var dangerousFlag = false;
 
 
     //check if in corner
@@ -32,7 +33,8 @@ exports.dispatcher = (game, turn, board, you) => {
     //Compute the path to both your tail and the closest piece of food on the board
     //this should be a*?
     var closestFood = findClosestFood(food);
-    var tempMoveFood = finder.findPath(snake[0].x, closestFood.x, closestFood.y, grid);
+    var tempMoveFoodPath = finder.findPath(snake[0].x, closestFood.x, closestFood.y, grid);
+    var tempMoveFood = toPath(snake[0], tempMoveFoodPath[0]);
 
     //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
     //40 is arbitrary we can change
@@ -42,7 +44,8 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
     //if there is, then make the best move to get closer to your tail.
-    var tempMoveTail = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, grid);
+    var tempMoveTailPath = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, grid);
+    var tempMoveTail = toPath(snake[0], tempMoveTailPath[0]);
     if (tempMoveTail != null){
       return tempMoveTail;
     }
@@ -55,7 +58,7 @@ exports.dispatcher = (game, turn, board, you) => {
     }
 
     //if we reach here what do we do?
-    return 'up';
+    return panicMove(game, turn, board, you);
 }
 
     
@@ -73,13 +76,8 @@ exports.dispatcher = (game, turn, board, you) => {
 //TODO:
 function modifyGrid(grid){
     //need to add snakes, food, etc.
-
-    enum{
-        empty
-        food
-        snake - every snake including ourself - our head
-    }
 }
+
 function findClosestFood(food, head){
     //find closest food from array
     var minDist = null;
@@ -88,39 +86,42 @@ function findClosestFood(food, head){
         
     }
 }
+
+
+function toPath(head, point){
+    if (head.x - point.x == 0){
+        if (head.y - point.y == 1){
+            return 'up';
+        } else if (head.y - point.y == -1){
+            return 'down';
+        } else {
+            console.log("tried to pass point that is not adjacent to snake");
+        }
+    } else if (head.x - point.x == -1){
+        if (head.y - point.y == 0){
+            return 'left';
+        } else {
+            console.log("tried to pass point that is not adjacent to snake");
+        }
+        
+    } else if (head.x - point.x == 1){
+        if (head.y - point.y == 0){
+            return 'right';
+        } else {
+            console.log("tried to pass point that is not adjacent to snake");
+        }
+    } else {
+        console.log("tried to pass point that not adjacent to snake");
+    }
+}
   
   
   
   
   //DONE:
-  function moveToRequest(move){
-    if (move == "up"){
-      return { "move": "up" }
-    } else if (move == "down"){
-      return { "move": "down" }
-    } else if (move == "right"){
-      return { "move": "right" }
-    } else if (move == "left"){
-      return { "move": "left" }
-    } else {
-      console.log("error in move");
-    }
-  }
-  
-  function createMap(columnCount, rowCount) {
-     const map = [];
-     for (let x = 0; x < columnCount; x++) {
-         map[x] = [];
-         for (let y = 0; y < rowCount; y++) {
-            addCell(map, x, y);
-         }
-     }
-     return map;
-  }
-  
-  function replaceCell(map, x, y, item) {
-      map[x][y] = item; // create a new object on x and y
-  }
+function panicMove(game, turn, board, you){
+    return 'up';
+}
 
   function checkCorners(snake, board){
     //check if in a corner
