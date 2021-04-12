@@ -19,6 +19,7 @@
   "homepage": "https://github.com/BattlesnakeOfficial/starter-snake-node#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "n-dimensional-flood-fill": "^1.0.0"
+    "n-dimensional-flood-fill": "^1.0.0",
+    "pathfinding": "^0.4.18"
   }
 }

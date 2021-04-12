@@ -1,74 +1,93 @@
-var size; 
-var x = you.body[0].x;
-var y = you.body[0].y;
-
-var directions = [];
-//use possibleMoves from index.js
+const e = require('express');
+const floodFill = require('n-dimensional-flood-fill'); 
 
 
+//maze version?
+function runFloodFill(board,you){
+    var x = you.head.x;
+    var y = you.head.y;
+    var boardCp = {...board};
+    var food = [board.food[0].x,board.food[0],y];
+
+    var path = [];
+    var grid = new PF.Grid(board.width,board.height);
+    grid.setUnwalkableAt();//use info from dispatcher ? 
+    performFloodFill(grid,[x,y],food,path);
+}
+
+function performFloodFill(grid,currPos,endPos,path){
+    var result = 0;
+    grid.setUnwalkableAt(currPos);
+    var right = [currPos.x+1,currPos.y];
+    var left = [currPos.x-1,currPos.y];
+    var up = [currPos.x,currPos.y+1];
+    var down = [currPos.x,currPos.y-1];
+
+    //terminating condition
+    if(currPos == endPos){ //This means path is found
+        return 1; //this will be only returned once when it reached to the endPos
+    }
+
+    if (grid.canGo(thisCell,right) && right.walkable){ //wall / othersnake check 
+        result = performFloodFill(grid,right,endPos,path);
+    }
+    if (result==0 && down.walkable){ //wall / othersnake check 
+        result = performFloodFill(grid,down,endPos,path);
+    }
+    if (result==0 && left.walkable){
+        result = performFloodFill(grid,left,endPos,path); //wall / othersnake check 
+    }
+    if (result==0 && up.walkable){ //wall / othersnake check 
+        result = performFloodFill(grid,up,endPos,path);
+    }
+
+    if(result == 0){
+        grid.setWalkableAt(currPos);
+        return 0;
+    }
+      
+    result ++;//result is added 1 on every recurse
+    return result;
+
+}
+
+
+//purpose of the function 
 //https://www.npmjs.com/package/n-dimensional-flood-fill
-//update to return array of positions
-//seed : starting node
-
-var grid = new PF.Grid(request.board.width, request.board.height); //could be moved to dispatcher
-var getter = function (x, y) {return grid[x][y];};
-
-function floodFill(possibleMoves, you, seed, result, getter, directions) {
-    var flood = [];
-    possibleMoves.forEach(move=>{
+function floodfill(you,board) {
+    
+    var grid = new PF.Grid(board.width,board.height); 
+    var getter = function (x, y) {return grid[x][y];}; //should set unwalkable area as 0 (walkable as 1) OR get grid instead of board
+    var pos = [you.head.x, you.head.y];
+    //regardless of 
+    //relationship with appendHead? 
+    possibleMoves.forEach(move=>{ //should be a possible moves from dispatcher??
         if (move === 'up') {
             result = floodFill({
                 getter: getter,
-                seed: [you.body[0].x,you.body[0].y-1],
-                onFlood: function (x, y) {
-                    flood.push(seed);
-                }
+                seed: you.pos,
             });
-            directions.push({move,flood});
+            directions.push(result.flooded);
         } else if (move === 'down') {
             result = floodFill({
                 getter: getter,
-                seed: [you.body[0].x,you.body[0].y+1],
-                onFlood: function (x, y) {
-                    flood.push(seed);
-                }
+                seed: you.pos,
             });
-            directions.push({move,flood});
+            directions.push(result.flooded);
         } else if (move === 'left') {
             result = floodFill({
                 getter: getter,
-                seed:[you.body[0].x-1,you.body[0].y],
-                onFlood: function (x, y) {
-                    flood.push(seed);
-                }
+                seed: you.pos,
             });
-            directions.push({move,flood});
+            directions.push(result.flooded);
         } else if (move === 'right') {
             result = floodFill({
                 getter: getter,
-                seed: [you.body[0].x+1,you.body[0].y],
-                onFlood: function (x, y) {
-                    flood.push(seed);
-                }
+                seed: you.pos,
             });
-            directions.push({move,flood});
+            directions.push(result.flooded);
         }
     });
     return directions;
 }
 
-//  //base case :
-//     //if current color is not prevColor return;
-//     //if current color is replacementColor return;
-//     if (x<0 || x >=size || y<0 || y>=size){
-//         return;
-//     } 
-//     //TODO :: change color of current position -> depend on how to decide colors
-
-//     //directions
-//     floodFill(x+1,y,prevColor,replacementColor);
-//     floodFill(x-1,y,prevColor,replacementColor);
-//     floodFill(x,y+1,prevColor,replacementColor);
-//     floodFill(x,y-1,prevColor,replacementColor);
-
-//     return direction;

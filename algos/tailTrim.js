@@ -1,5 +1,4 @@
-var otherSnakes = []; //TODO :: move to dispatcher
-
+const PF = require('pathfinding');
 
 //TODO :: store walkable areas of enemy snakes
 //copy of the board, store childdren, trim every other snake other than me
@@ -10,34 +9,33 @@ var otherSnakes = []; //TODO :: move to dispatcher
 //snake.length = 1;
 //return the board object 
 
-
-function tailTrim (board, you, otherSnakes){
+function tailTrim(board,you){
+    //create a deep copy of the board
     var boardCp = {...board};
-    var grid = new PF.Grid(request.board.width, request.board.height);
-    board.snakes.foreach(snake=>{
+    //delete all snakes from the copied board
+    while(board.snakes){
+        boardCp.snakes.pop(); //is it a right way to remove?
+    }
+    board.snakes.foreach(snake =>{
         if(snake.id !== you.id){
-            otherSnakes.push({
+            boardCp.snakes.push({
                 x:snake.body[0].x,
                 y:snake.body[0].y,
                 id:snake.id,
-                length:1
+                length: 1
             })
         }
-    });
-    boardCp = setUnwalkable(otherSnakes, grid);
-    return boardCp;
-    //should return grid? 
-}
-
-//https://www.npmjs.com/package/pathfinding
-function setUnwalkable(otherSnakes, grid){
-    otherSnakes.foreach(snake => {
-        grid.setWalkableAt(snake.x,snake.y,false);
     })
-    return grid;
+    return boardCp;
 }
 
-
+// //https://www.npmjs.com/package/pathfinding
+// function setUnwalkable(otherSnakes, grid){
+//     otherSnakes.foreach(snake => {
+//         grid.setWalkableAt(snake.x,snake.y,false);
+//     })
+//     return grid;
+// }
 
 
 exports.default = tailTrim;
