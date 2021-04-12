@@ -15,14 +15,14 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //tail trimmed board
     var tailTrimGrid = tailTrim(game, turn, board, you);
-    var finalGrid = headAppend(grid);
+    var finalBoard = headAppend(game, turn, tailTrimGrid, you);
     
     //need to add stuff
-    modifyGrid(board, grid);
+    modifyGrid(finalBoard, grid);
 
 
     //check if in corner
-    var cornerMove = checkCorners(snake, board);
+    var cornerMove = checkCorners(snake, finalBoard);
     if (cornerMove != null){
         return cornerMove;
     }
@@ -56,7 +56,7 @@ exports.dispatcher = (game, turn, board, you) => {
     }
 
     //if we reach here what do we do?
-    return panicMove(game, turn, board, you);
+    return panicMove(game, turn, finalBoard, you);
 }
 
     
