@@ -13,14 +13,12 @@ exports.dispatcher = (game, turn, board, you) => {
     var snake = you.body;
     var food = board.food;
 
-    //need to add stuff
-    addToGrid(grid);
-
     //tail trimmed board
     var tailTrimGrid = tailTrim(game, turn, board, you);
     var finalGrid = headAppend(grid);
-
-    //var dangerousFlag = false;
+    
+    //need to add stuff
+    modifyGrid(board, grid);
 
 
     //check if in corner
@@ -74,17 +72,33 @@ exports.dispatcher = (game, turn, board, you) => {
 // custom code
 
 //TODO:
-function modifyGrid(grid){
+function modifyGrid(board, grid){
     //need to add snakes, food, etc.
+    for (var i = 0; i < board.snakes.length; i++){
+        for (var j = 0; j < board.snakes[i].length; j++){
+            grid.setWalkableAt(board.snakes[i][j].x, board.snakes[i][j].y, false);
+        }
+    }
 }
 
 function findClosestFood(food, head){
     //find closest food from array
-    var minDist = null;
+    var minDist;
+    var minFood;
 
     for (var i = 0; i < food.length; i++){
+        var tempPath = finder.findPath(head.x, head.y, food[i].x, food[i].y, grid);
         
+        if (i == 0){
+            minDist = tempPath.length;
+        } else {
+            if (tempPath.length < minDist){
+                minDist = tempPath.length;
+                minFood = i;
+            }
+        }
     }
+    return food[minFood];
 }
 
 
