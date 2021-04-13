@@ -23,7 +23,7 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //check if in corner
     var cornerMove = checkCorners(snake, finalBoard);
-    if (cornerMove != null){
+    if (cornerMove != null && checkMove(cornerMove, game, turn, board, you)){
         return cornerMove;
     }
 
@@ -36,7 +36,7 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
     //40 is arbitrary we can change
-    if (health < 40 && tempMoveFood != null){
+    if (health < 40 && tempMoveFood != null && checkMove(tempMoveFood, game, turn, board, you)){
         return tempMoveFood;
     }
 
@@ -44,14 +44,14 @@ exports.dispatcher = (game, turn, board, you) => {
     //if there is, then make the best move to get closer to your tail.
     var tempMoveTailPath = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, grid);
     var tempMoveTail = toPath(snake[0], tempMoveTailPath[0]);
-    if (tempMoveTail != null){
+    if (tempMoveTail != null && checkMove(tempMoveTail, game, turn, board, you)){
       return tempMoveTail;
     }
 
 
     //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
     var tempMoveFlood = floodFill();
-    if (tempMoveFlood != null){
+    if (tempMoveFlood != null && checkMove(tempMoveFlood, game, turn, board, you)){
       return tempMoveFlood;
     }
 
@@ -129,10 +129,43 @@ function toPath(head, point){
     }
 }
   
-  
-  
-  
-  //DONE:
+function checkMove(move, game, turn, board, you){
+    var x;
+    var y;
+    if (move == 'up'){
+        x = snake[0].x;
+        y = snake[0].y + 1;
+    } else if (move == 'down'){
+        x = snake[0].x;
+        y = snake[0].y - 1;
+    } else if (move == 'left'){
+        x = snake[0].x - 1;
+        y = snake[0].y;
+    } else if (move == 'right'){
+        x = snake[0].x - 1;
+        y = snake[0].y;
+    } else {
+        console.log("error move passed");
+        return false;
+    }
+    
+    if (x < 0 || y < 0 || x > 10 || y > 10){
+        console.log("moving off grid");
+        return false;
+    }
+    for (var i = 0; i < board.snakes.length; i++){
+        if (board.snakes[i].id != you.id){
+            for (var j = 0; j < board.snakes[i].body.length; j++){
+                if (board.snakes[i].body[j].x == x && board.snakes[i].body[j].y == y){
+                    console.log("snake collision");
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 function panicMove(game, turn, board, you){
     return 'up';
 }
