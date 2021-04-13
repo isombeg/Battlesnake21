@@ -11,16 +11,16 @@ const PF = require('pathfinding');
 
 function tailTrim(board,you){
     //create a deep copy of the board
-    var boardCp = {...board};
+    var boardCp = JSON.parse(JSON.stringify(board));
     //delete all snakes from the copied board
-    while(board.snakes){
-        boardCp.snakes.pop(); //is it a right way to remove?
-    }
+    boardCp.snakes = {}
     board.snakes.foreach(snake =>{
         if(snake.id !== you.id){
             boardCp.snakes.push({
-                x:snake.body[0].x,
-                y:snake.body[0].y,
+                body:[{
+                    x:snake.head.x,
+                    y:snake.head.y
+                }],
                 id:snake.id,
                 length: 1
             })
