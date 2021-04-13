@@ -32,18 +32,25 @@ exports.dispatcher = (game, turn, board, you) => {
     //this should be a*?
     var closestFood = findClosestFood(food);
     var tempMoveFoodPath = finder.findPath(snake[0].x, closestFood.x, closestFood.y, grid);
-    var tempMoveFood = toPath(snake[0], tempMoveFoodPath[0]);
+    var tempMoveFood = null;
+    if (tempMoveFoodPath.length != 0){
+      tempMoveFood = toPath(snake[0], tempMoveFoodPath[0]);
+    }
+    
 
     //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
     //40 is arbitrary we can change
     if (health < 40 && tempMoveFood != null && checkMove(tempMoveFood, game, turn, board, you)){
-        return tempMoveFood;
+      return tempMoveFood;
     }
 
     //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
     //if there is, then make the best move to get closer to your tail.
     var tempMoveTailPath = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, grid);
-    var tempMoveTail = toPath(snake[0], tempMoveTailPath[0]);
+    var tempMoveTail = null;
+    if (tempMoveTailPath.length != 0){
+      tempMoveTail = toPath(snake[0], tempMoveTailPath[0]);
+    }
     if (tempMoveTail != null && checkMove(tempMoveTail, game, turn, board, you)){
       return tempMoveTail;
     }
@@ -71,7 +78,7 @@ exports.dispatcher = (game, turn, board, you) => {
 
 // custom code
 
-//TODO:
+
 function modifyGrid(board, grid){
     //need to add snakes, food, etc.
     for (var i = 0; i < board.snakes.length; i++){
@@ -170,37 +177,37 @@ function panicMove(game, turn, board, you){
     return 'up';
 }
 
-  function checkCorners(snake, board){
-    //check if in a corner
-    if (snake[0].x == 0){
-        if (snake[0].y == 0){
-          if (snake[1].x == 0){
-            return 'right';
-          } else {
-            return 'down';
-          }
-        } else if (snake[0].y == board.height - 1){
-          if (snake[1].x == 0){
-            return 'right';
-          } else {
-            return 'up';
-          }
-        }
-      } else if (snake[0].x == board.width - 1){
-        if (snake[0].y == 0){
-          if (snake[1].y == 0){
-            return 'up';
-          } else {
-            return 'left';
-          }
-        } else if (snake[0].y == request.board.height - 1){
-          if (snake[1].x == request.board.height -1){
-            return 'left';
-          } else {
-            return 'down';
-          }
-        }
+function checkCorners(snake, board){
+  //check if in a corner
+  if (snake[0].x == 0){
+    if (snake[0].y == 0){
+      if (snake[1].x == 0){
+        return 'right';
       } else {
-          return null;
+        return 'down';
       }
-    } 
+    } else if (snake[0].y == board.height - 1){
+      if (snake[1].x == 0){
+        return 'right';
+      } else {
+        return 'up';
+      }
+    }
+  } else if (snake[0].x == board.width - 1){
+    if (snake[0].y == 0){
+      if (snake[1].y == 0){
+        return 'up';
+      } else {
+        return 'left';
+      }
+    } else if (snake[0].y == request.board.height - 1){
+      if (snake[1].x == request.board.height -1){
+        return 'left';
+      } else {
+        return 'down';
+      }
+    }
+  } else {
+      return null;
+  }
+} 
