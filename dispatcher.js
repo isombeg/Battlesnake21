@@ -7,30 +7,32 @@ exports.dispatcher = (game, turn, board, you) => {
     var generatedMove = 'up';
     var possibleMoves = ['up', 'down', 'left', 'right'];
 
-    var grid = new PF.Grid(request.board.width, request.board.height);
+    var grid = new PF.Grid(board.width, board.height);
     var finder = new PF.AStarFinder();
     
     var snake = you.body;
     var food = board.food;
+    var ogBoard = board;
 
     //tail trimmed board
-    var tailTrimGrid = tailTrim(game, turn, board, you);
-    var finalBoard = headAppend(game, turn, tailTrimGrid, you);
+    var tailTrimGrid = tailTrim(board, you);
+    var finalBoard = headAppend(tailTrimGrid, you);
+    
     
     //need to add stuff
     modifyGrid(finalBoard, grid);
 
 
     //check if in corner
-    var cornerMove = checkCorners(snake, finalBoard);
-    if (cornerMove != null && checkMove(cornerMove, board, finalBoard, you)){
+    var cornerMove = checkCorners(snake, ogBoard);
+    if (cornerMove != null && checkMove(cornerMove, ogBoard, you)){
         return cornerMove;
     }
 
 
     //Compute the path to both your tail and the closest piece of food on the board
     //this should be a*?
-    var closestFood = findClosestFood(food);
+    var closestFood = findClosestFood(food, snake[0], grid);
     var tempMoveFoodPath = finder.findPath(snake[0].x, closestFood.x, closestFood.y, grid);
     var tempMoveFood = null;
     if (tempMoveFoodPath.length != 0){
@@ -40,7 +42,7 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
     //40 is arbitrary we can change
-    if (health < 40 && tempMoveFood != null && checkMove(tempMoveFood, board, finalBoard you)){
+    if (health < 40 && tempMoveFood != null && checkMove(tempMoveFood, ogBoard, you)){
       return tempMoveFood;
     }
 
@@ -51,14 +53,14 @@ exports.dispatcher = (game, turn, board, you) => {
     if (tempMoveTailPath.length != 0){
       tempMoveTail = toPath(snake[0], tempMoveTailPath[0]);
     }
-    if (tempMoveTail != null && checkMove(tempMoveTail, board, finalBoard, you)){
+    if (tempMoveTail != null && checkMove(tempMoveTail, ogBoard, you)){
       return tempMoveTail;
     }
 
 
     //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
     var tempMoveFlood = floodFill();
-    if (tempMoveFlood != null && checkMove(tempMoveFlood, board, finalBoard, you)){
+    if (tempMoveFlood != null && checkMove(tempMoveFlood, ogBoard, you)){
       return tempMoveFlood;
     }
 
@@ -88,7 +90,7 @@ function modifyGrid(board, grid){
     }
 }
 
-function findClosestFood(food, head){
+function findClosestFood(food, head, grid){
     //find closest food from array
     var minDist;
     var minFood;
@@ -136,7 +138,7 @@ function toPath(head, point){
     }
 }
   
-function checkMove(move, board, finalBoard, you){
+function checkMove(move, board, you){
     var x;
     var y;
     if (move == 'up'){
