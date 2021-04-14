@@ -61,6 +61,20 @@ const PF = require('pathfinding');
 
 //alternative 
 function lastMinuteMove(board,you){  //food position ?
+    var wall = []; 
+    board.snakes.foreach(snake =>{
+        if(snake.id !== you.id){
+            for (var i=0; i<snake.length;i++){
+                wall.push([snake.body[i].x,snake.body[i].y]);
+            }
+        }
+    })
+    var x = you.head.x;
+    var y = you.head.y;
+    var head = [x,y];
+    for(var i=1; i<you.length;i++){
+        wall.push(you.body[i].x,you.body[i].y);
+    }
     return 'up';
 }
 
