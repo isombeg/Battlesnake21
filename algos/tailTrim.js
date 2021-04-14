@@ -17,10 +17,10 @@ function tailTrim(board,you){
     board.snakes.foreach(snake =>{
         if(snake.id !== you.id){
             boardCp.snakes.push({
-                body:[{
+                body:{
                     x:snake.head.x,
                     y:snake.head.y
-                }],
+                },
                 id:snake.id,
                 length: 1
             })
@@ -29,13 +29,5 @@ function tailTrim(board,you){
     return boardCp;
 }
 
-// //https://www.npmjs.com/package/pathfinding
-// function setUnwalkable(otherSnakes, grid){
-//     otherSnakes.foreach(snake => {
-//         grid.setWalkableAt(snake.x,snake.y,false);
-//     })
-//     return grid;
-// }
 
-
-exports.default = tailTrim;
+module.exports = tailTrim;
