@@ -21,7 +21,10 @@ const appendHeadLeft = (bsnake, newBattleSnakes, filledCoords) => {
     if(x != 0 && !(filledCoords.has(x - 1) && filledCoords.get(x - 1).has(y))){
         console.log('headAppend >', 'append left:', bsnake.id)
         appendHead(bsnake, newBattleSnakes, x - 1, y)
+        return true;
     }
+
+    return false;
 }
 
 const appendHeadRight = (bsnake, newBattleSnakes, filledCoords, width) => {
@@ -29,7 +32,10 @@ const appendHeadRight = (bsnake, newBattleSnakes, filledCoords, width) => {
     if(x != width - 1 && !(filledCoords.has(x + 1) && filledCoords.get(x + 1).has(y))){
         console.log('headAppend >', 'append right:', bsnake.id)
         appendHead(bsnake, newBattleSnakes, x + 1, y)
+        return true;
     }
+
+    return false;
 }
 
 const appendHeadDown = (bsnake, newBattleSnakes, filledCoords) => {
@@ -37,7 +43,10 @@ const appendHeadDown = (bsnake, newBattleSnakes, filledCoords) => {
     if(y != 0 && !(filledCoords.has(x) && filledCoords.get(x).has(y-1))){
         console.log('headAppend >', 'append down:', bsnake.id)
         appendHead(bsnake, newBattleSnakes, x, y - 1);
+        return true;
     }
+
+    return false;
 }
 
 const appendHeadUp = (bsnake, newBattleSnakes, filledCoords, height) => {
@@ -45,7 +54,10 @@ const appendHeadUp = (bsnake, newBattleSnakes, filledCoords, height) => {
     if(y != height - 1 && !(filledCoords.has(x) && filledCoords.get(x).has(y+1))){
         console.log('headAppend >', 'append up:', bsnake.id)
         appendHead(bsnake, newBattleSnakes, x, y + 1);
+        return true;
     }
+
+    return false;
 }
 
 const findOccupiedSquares = (filledCoords, battleSnakes) => {
@@ -72,11 +84,21 @@ const headAppend = (board, you) => {
             console.log('headAppend >', 'adding \'you\' to modified board');
             continue;
         }
+
+        let appendResults = [
+            appendHeadLeft(bsnake, newBoard.snakes, filledCoords),
+            appendHeadDown(bsnake, newBoard.snakes, filledCoords),
+            appendHeadRight(bsnake, newBoard.snakes, filledCoords, board.width),
+            appendHeadUp(bsnake, newBoard.snakes, filledCoords, board.height)
+        ];
         
-        appendHeadLeft(bsnake, newBoard.snakes, filledCoords);
-        appendHeadDown(bsnake, newBoard.snakes, filledCoords);
-        appendHeadRight(bsnake, newBoard.snakes, filledCoords, board.width);
-        appendHeadUp(bsnake, newBoard.snakes, filledCoords, board.height);
+        let trues = appendResults.filter(
+            result => result === true
+        );
+
+        if(!trues.length){
+            newBoard.snakes.push(JSON.parse(JSON.stringify(bsnake)));
+        }
     }
     
     console.log('headAppend >', 'headAppend result:', newBoard);
