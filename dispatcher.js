@@ -162,11 +162,13 @@ function checkMove(move, board, you){
         console.log("moving off grid");
         return false;
     }
+    /*
     if (finalBoard[x][y] == "1"){
         console.log("snake collision");
         return false;
     }
-    /*
+    */
+    
     for (var i = 0; i < board.snakes.length; i++){
         if (board.snakes[i].id != you.id){
             for (var j = 0; j < board.snakes[i].body.length; j++){
@@ -177,7 +179,7 @@ function checkMove(move, board, you){
             }
         }
     }
-    */
+    
     return true;
 }
 
@@ -195,28 +197,28 @@ function panicMove(board, height, width, you){
         if (board[x][y] == 1){
             break;
         }
-        downC++;
+        leftC++;
     }
-    while (x < height - 1){
+    while (x < width - 1){
         x++;
         if (board[x][y] == 1){
             break;
         }
-        upC++;
+        rightC++;
     }
     while (y >= 0){
         y--;
         if (board[x][y] == 1){
             break;
         }
-        leftC++;
+        downC++;
     }
-    while (y < width - 1){
+    while (y < height - 1){
         y++;
         if (board[x][y] == 1){
             break;
         }
-        rightC++;
+        upC++;
     }
     
     var max = Math.max(upC, leftC, downC, rightC);
@@ -238,13 +240,13 @@ function checkCorners(snake, board){
       if (snake[1].x == 0){
         return 'right';
       } else {
-        return 'down';
+        return 'up';
       }
     } else if (snake[0].y == board.height - 1){
       if (snake[1].x == 0){
         return 'right';
       } else {
-        return 'up';
+        return 'down';
       }
     }
   } else if (snake[0].x == board.width - 1){
