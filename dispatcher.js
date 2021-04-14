@@ -23,7 +23,7 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //check if in corner
     var cornerMove = checkCorners(snake, finalBoard);
-    if (cornerMove != null && checkMove(cornerMove, game, turn, board, you)){
+    if (cornerMove != null && checkMove(cornerMove, board, finalBoard, you)){
         return cornerMove;
     }
 
@@ -40,7 +40,7 @@ exports.dispatcher = (game, turn, board, you) => {
 
     //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
     //40 is arbitrary we can change
-    if (health < 40 && tempMoveFood != null && checkMove(tempMoveFood, game, turn, board, you)){
+    if (health < 40 && tempMoveFood != null && checkMove(tempMoveFood, board, finalBoard you)){
       return tempMoveFood;
     }
 
@@ -51,19 +51,19 @@ exports.dispatcher = (game, turn, board, you) => {
     if (tempMoveTailPath.length != 0){
       tempMoveTail = toPath(snake[0], tempMoveTailPath[0]);
     }
-    if (tempMoveTail != null && checkMove(tempMoveTail, game, turn, board, you)){
+    if (tempMoveTail != null && checkMove(tempMoveTail, board, finalBoard, you)){
       return tempMoveTail;
     }
 
 
     //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
     var tempMoveFlood = floodFill();
-    if (tempMoveFlood != null && checkMove(tempMoveFlood, game, turn, board, you)){
+    if (tempMoveFlood != null && checkMove(tempMoveFlood, board, finalBoard, you)){
       return tempMoveFlood;
     }
 
     //if we reach here what do we do?
-    return panicMove(game, turn, finalBoard, you);
+    return panicMove(finalBoard, board.height, board.width, you);
 }
 
     
@@ -136,7 +136,7 @@ function toPath(head, point){
     }
 }
   
-function checkMove(move, game, turn, board, you){
+function checkMove(move, board, finalBoard, you){
     var x;
     var y;
     if (move == 'up'){
@@ -156,10 +156,15 @@ function checkMove(move, game, turn, board, you){
         return false;
     }
     
-    if (x < 0 || y < 0 || x > 10 || y > 10){
+    if (x < 0 || y < 0 || x >= board.height || y > board.width){
         console.log("moving off grid");
         return false;
     }
+    if (finalBoard[x][y] == "1"){
+        console.log("snake collision");
+        return false;
+    }
+    /*
     for (var i = 0; i < board.snakes.length; i++){
         if (board.snakes[i].id != you.id){
             for (var j = 0; j < board.snakes[i].body.length; j++){
@@ -170,10 +175,11 @@ function checkMove(move, game, turn, board, you){
             }
         }
     }
+    */
     return true;
 }
 
-function panicMove(game, turn, board, height, width, you){
+function panicMove(board, height, width, you){
     var upC;
     var downC;
     var leftC;
