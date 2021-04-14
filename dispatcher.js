@@ -173,8 +173,54 @@ function checkMove(move, game, turn, board, you){
     return true;
 }
 
-function panicMove(game, turn, board, you){
-    return 'up';
+function panicMove(game, turn, board, height, width, you){
+    var upC;
+    var downC;
+    var leftC;
+    var rightC;
+    
+    var x = you.head.x;
+    var y = you.head.y;
+    
+    while (x >= 0){
+        x--;
+        if (board[x][y] == 1){
+            break;
+        }
+        downC++;
+    }
+    while (x < height - 1){
+        x++;
+        if (board[x][y] == 1){
+            break;
+        }
+        upC++;
+    }
+    while (y >= 0){
+        y--;
+        if (board[x][y] == 1){
+            break;
+        }
+        leftC++;
+    }
+    while (y < width - 1){
+        y++;
+        if (board[x][y] == 1){
+            break;
+        }
+        rightC++;
+    }
+    
+    var max = Math.max(upC, leftC, downC, rightC);
+    if (max == upC){
+        return 'up';
+    } else if (max == leftC){
+        return 'left';
+    } else if (max == downC){
+        return 'down';
+    } else {
+        return 'right';
+    }
 }
 
 function checkCorners(snake, board){
