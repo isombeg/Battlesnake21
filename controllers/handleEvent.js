@@ -2,7 +2,7 @@ const decisionDispatcher = require('../dispatcher').dispatcher;
 
 exports.handleIndex = (request, response) => {
     console.log('INDEX');
-    let battlesnakeInfo = {
+    const battlesnakeInfo = {
         apiversion: '1',
         author: '',
         color: '#888888',
@@ -13,15 +13,15 @@ exports.handleIndex = (request, response) => {
 }
 
 exports.handleStart = (request, response) => {
-    let gameData = request.body
+    const gameData = request.body
 
     console.log('START')
     response.status(200).send('ok')
 }
 
 exports.handleMove = (request, response) => {
-    let gameData = request.body
-    let move = decisionDispatcher(
+    const gameData = request.body
+    const move = decisionDispatcher(
         gameData.game,
         gameData.turn,
         gameData.board,
@@ -35,7 +35,7 @@ exports.handleMove = (request, response) => {
 }
 
 exports.handleEnd = (request, response) => {
-    let gameData = request.body
+    const gameData = request.body
 
     console.log('END')
     response.status(200).send('ok')
