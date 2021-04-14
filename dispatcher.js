@@ -1,7 +1,8 @@
 const PF = require('pathfinding');
 const aStarSearch = require('./algos/aStarSearch');
-const floodFill = require('./algos/floodFill');
+//const floodFill = require('./algos/floodFill');
 const tailTrim = require('./algos/tailTrim');
+const headAppend = require('./algos/headAppend');
 
 exports.dispatcher = (game, turn, board, you) => {
     var generatedMove = 'up';
@@ -59,10 +60,12 @@ exports.dispatcher = (game, turn, board, you) => {
 
 
     //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
+    /*
     var tempMoveFlood = floodFill();
     if (tempMoveFlood != null && checkMove(tempMoveFlood, ogBoard, you)){
       return tempMoveFlood;
     }
+    */
 
     //if we reach here what do we do?
     return panicMove(finalBoard, board.height, board.width, you);
