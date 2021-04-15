@@ -13,8 +13,15 @@ function tailTrim(board,you){
     //delete all snakes from the copied board
     for(snake of boardCp.snakes){
         if(snake.id !== you.id){
+          if (snake.length > 3){
+            snake.body = snake.body.slice(0, snake.length - 3);
+            //snake.body = [{x:snake.head.x,y:snake.head.y}];
+            snake.length = snake.length - 3;
+          } else {
             snake.body = [{x:snake.head.x,y:snake.head.y}];
             snake.length = 1;
+          }
+            
         }
     }
     // boardCp.snakes = {}

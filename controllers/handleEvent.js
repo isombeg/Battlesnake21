@@ -5,9 +5,9 @@ exports.handleIndex = (request, response) => {
     const battlesnakeInfo = {
         apiversion: '1',
         author: '',
-        color: '#888888',
-        head: 'default',
-        tail: 'default'
+        color: '#8BFCFF',
+        head: 'gamer',
+        tail: 'mouse'
     }
     response.status(200).json(battlesnakeInfo)
 }

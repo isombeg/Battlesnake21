@@ -9,6 +9,7 @@ exports.dispatcher = (game, turn, board, you) => {
     var possibleMoves = ['up', 'down', 'left', 'right'];
 
     var grid = new PF.Grid(board.width, board.height);
+    var gridTail = new PF.Grid(board.width, board.height);
     var finder = new PF.AStarFinder();
     
     var snake = you.body;
@@ -22,64 +23,117 @@ exports.dispatcher = (game, turn, board, you) => {
     
     //need to add stuff
     modifyGrid(you, finalBoard, grid);
+    var tailBoard = headAppend(ogBoard, you);
+    modifyGrid(you, tailBoard, gridTail);
 
 
     //check if in corner
     var cornerMove = checkCorners(snake, ogBoard);
     if (cornerMove != null && checkMove(cornerMove, ogBoard, you)){
-      console.log("used corner move");
+      console.log("used corner move: " + turn);
       return cornerMove;
     }
 
 
-    //Compute the path to both your tail and the closest piece of food on the board
-    //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
-    //40 is arbitrary we can change
-    var closestFood = findClosestFood(food, snake[0], grid, finder);
+    if (ogBoard.snakes.length > 3){
+      //Compute the path to both your tail and the closest piece of food on the board
+      //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
+      //40 is arbitrary we can change
+      var closestFood = findClosestFood(food, snake[0], grid, finder);
 
-    if (closestFood != null){
-      var gridcp2 = grid.clone();
-      var tempMoveFoodPath = finder.findPath(snake[0].x, snake[0].y, food[closestFood].x, food[closestFood].y, gridcp2);
-      var tempMoveFood = null;
-      if (tempMoveFoodPath.length >= 2){
-        tempMoveFood = toPath(snake[0], tempMoveFoodPath[1][0], tempMoveFoodPath[1][1]);
+      if (closestFood != null){
+        var gridcp2 = grid.clone();
+        var tempMoveFoodPath = finder.findPath(snake[0].x, snake[0].y, food[closestFood].x, food[closestFood].y, gridcp2);
+        var tempMoveFood = null;
+        if (tempMoveFoodPath.length >= 2){
+          tempMoveFood = toPath(snake[0], tempMoveFoodPath[1][0], tempMoveFoodPath[1][1]);
+        }
+      
+        if (you.health <= 100 && tempMoveFood != null && checkMove(tempMoveFood, ogBoard, you)){
+          console.log("used Food move"  + turn);
+          return tempMoveFood;
+        }
       }
+
+      //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
+      //if there is, then make the best move to get closer to your tail.
+      if (you.length > 3){
+        var tempMoveTailPath = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, gridTail);
+        console.log("tail path: " + tempMoveTailPath)
+        var tempMoveTail = null;
+        if (tempMoveTailPath.length >= 2){
+          tempMoveTail = toPath(snake[0], tempMoveTailPath[1][0], tempMoveTailPath[1][1]);
+        }
+        if (tempMoveTail != null && checkMove(tempMoveTail, ogBoard, you)){
+          console.log("used tail move"  + turn);
+          return tempMoveTail;
+        }
+      }
+      
+
+
+      //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
+      /*
+      var tempMoveFlood = floodFill();
+      if (tempMoveFlood != null && checkMove(tempMoveFlood, ogBoard, you)){
+        return tempMoveFlood;
+      }
+      */
+
+      //if we reach here what do we do?
+      console.log("used panic move"  + turn);
+      return panicMove(ogBoard, board.height, board.width, you);
+    } else {
+      //Compute the path to both your tail and the closest piece of food on the board
+      //If you are hungry and there exists a path to the closest piece of food, make the best move to get closer to the food.
+      //40 is arbitrary we can change
+      var closestFood = findClosestFood(food, snake[0], grid, finder);
+
+      if (closestFood != null){
+        var gridcp2 = grid.clone();
+        var tempMoveFoodPath = finder.findPath(snake[0].x, snake[0].y, food[closestFood].x, food[closestFood].y, gridcp2);
+        var tempMoveFood = null;
+        if (tempMoveFoodPath.length >= 2){
+          tempMoveFood = toPath(snake[0], tempMoveFoodPath[1][0], tempMoveFoodPath[1][1]);
+        }
+      
+        if (you.health <= 30 && tempMoveFood != null && checkMove(tempMoveFood, ogBoard, you)){
+          console.log("used Food move"  + turn);
+          return tempMoveFood;
+        }
+      }
+
+      //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
+      //if there is, then make the best move to get closer to your tail.
+      if (you.length > 3){
+        var tempMoveTailPath = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, gridTail);
+        console.log("tail path: " + tempMoveTailPath)
+        var tempMoveTail = null;
+        if (tempMoveTailPath.length >= 2){
+          tempMoveTail = toPath(snake[0], tempMoveTailPath[1][0], tempMoveTailPath[1][1]);
+        }
+        if (tempMoveTail != null && checkMove(tempMoveTail, ogBoard, you)){
+          console.log("used tail move"  + turn);
+          return tempMoveTail;
+        }
+      }
+      
+
+
+      //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
+      /*
+      var tempMoveFlood = floodFill();
+      if (tempMoveFlood != null && checkMove(tempMoveFlood, ogBoard, you)){
+        return tempMoveFlood;
+      }
+      */
+
+      //if we reach here what do we do?
+      console.log("used panic move"  + turn);
+      return panicMove(ogBoard, board.height, board.width, you);
+    }
+
     
-      if (you.health <= 100 && tempMoveFood != null && checkMove(tempMoveFood, ogBoard, you)){
-        console.log("used Food move");
-        return tempMoveFood;
-      }
-    }
-
-    //If you are not hungry or there doesn’t currently exist a path to the food, check to see if there is a path to your tail
-    //if there is, then make the best move to get closer to your tail.
-    if (you.length > 3){
-      var gridcp2 = grid.clone();
-      var tempMoveTailPath = finder.findPath(snake[0].x, snake[0].y, snake[snake.length - 1].x, snake[snake.length - 1].y, gridcp2);
-      console.log("tail path: " + tempMoveTailPath)
-      var tempMoveTail = null;
-      if (tempMoveTailPath.length >= 2){
-        tempMoveTail = toPath(snake[0], tempMoveTailPath[1][0], tempMoveTailPath[1][1]);
-      }
-      if (tempMoveTail != null && checkMove(tempMoveTail, ogBoard, you)){
-        console.log("used tail move");
-        return tempMoveTail;
-      }
-    }
-    
-
-
-    //If there isn’t a path to your tail, make a move in the direction with the most “promise.”
-    /*
-    var tempMoveFlood = floodFill();
-    if (tempMoveFlood != null && checkMove(tempMoveFlood, ogBoard, you)){
-      return tempMoveFlood;
-    }
-    */
-
-    //if we reach here what do we do?
-    console.log("used panic move");
-    return panicMove(ogBoard, board.height, board.width, you);
 }
 
     
@@ -189,7 +243,7 @@ function checkMove(move, board, you){
     */
     
     for (var i = 0; i < board.snakes.length; i++){
-      for (var j = 0; j < board.snakes[i].body.length; j++){
+      for (var j = 0; j < board.snakes[i].body.length - 1; j++){
           if (board.snakes[i].body[j].x == x && board.snakes[i].body[j].y == y){
               console.log("snake collision");
               return false;
@@ -201,14 +255,17 @@ function checkMove(move, board, you){
 }
 
 function snakeCollision(board, you, x, y){
+  if (x < 0 || x >= board.width || y < 0 || y >= board.height){
+    return false;
+  }
   for (var i = 0; i < board.snakes.length; i++){
-      for (var j = 0; j < board.snakes[i].body.length; j++){
+      for (var j = 0; j < board.snakes[i].body.length - 1; j++){
           if (board.snakes[i].body[j].x == x && board.snakes[i].body[j].y == y){
               return false;
           }
       }
   }
-  for (var i = 0; i < you.body.length; i++){
+  for (var i = 0; i < you.body.length - 1; i++){
     if (you.body[i].x == x && you.body[i].y == y){
       return false;
     }
@@ -220,11 +277,11 @@ function panicMove(board, height, width, you){
   var x = you.body[0].x;
   var y = you.body[0].y;
 
-  if (snakeCollision(board, x - 1, y) == false){
+  if (snakeCollision(board, you, x - 1, y) == true){
     return "left";
-  } else if (snakeCollision(board, x + 1, y) == false){
+  } else if (snakeCollision(board, you, x + 1, y) == true){
     return "right";
-  } else if (snakeCollision(board, x, y - 1) == false){
+  } else if (snakeCollision(board, you, x, y - 1) == true){
     return "down";
   } else {
     return "up";
