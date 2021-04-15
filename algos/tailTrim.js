@@ -1,5 +1,3 @@
-// const PF = require('pathfinding');
-
 //TODO :: store walkable areas of enemy snakes
 //copy of the board, store childdren, trim every other snake other than me
 //reveived the board from dispatcher, create a copy, and modify the board. 
@@ -12,13 +10,38 @@
 function tailTrim(board,you){
     //create a deep copy of the board
     var boardCp = JSON.parse(JSON.stringify(board));
-    boardCp.snakes.forEach(snake => {
+    //delete all snakes from the copied board
+    for(snake of boardCp.snakes){
         if(snake.id !== you.id){
-            snake.body = [snake.body[0]];
-            snake.length = 1
-            //console.log('tailTrim', snake.name, snake);
+            snake.body = [{x:snake.head.x,y:snake.head.y}];
+            snake.length = 1;
         }
-    });
+    }
+    // boardCp.snakes = {}
+    // for(snake of board.snakes){
+    //     if(snake.id !== you.id){
+    //         boardCp.snakes.push({
+    //             body:{
+    //                 x:snake.head.x,
+    //                 y:snake.head.y
+    //             },
+    //             id:snake.id,
+    //             length: 1
+    //         })
+    //     }
+    // }
+    // board.snakes.foreach(function(snake){
+    //     if(snake.id !== you.id){
+    //         boardCp.snakes.push({
+    //             body:{
+    //                 x:snake.head.x,
+    //                 y:snake.head.y
+    //             },
+    //             id:snake.id,
+    //             length: 1
+    //         })
+    //     }
+    // })
     return boardCp;
 }
 
