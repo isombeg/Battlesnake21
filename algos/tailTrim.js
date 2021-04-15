@@ -16,7 +16,7 @@ function tailTrim(board,you){
         if(snake.id !== you.id){
             snake.body = [snake.body[0]];
             snake.length = 1
-            console.log('tailTrim', snake.name, snake);
+            //console.log('tailTrim', snake.name, snake);
         }
     });
     return boardCp;
