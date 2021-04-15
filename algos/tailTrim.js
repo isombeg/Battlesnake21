@@ -13,19 +13,37 @@ function tailTrim(board,you){
     //create a deep copy of the board
     var boardCp = JSON.parse(JSON.stringify(board));
     //delete all snakes from the copied board
-    boardCp.snakes = {}
-    board.snakes.foreach(snake =>{
+    for(snake of boardCp.snakes){
         if(snake.id !== you.id){
-            boardCp.snakes.push({
-                body:{
-                    x:snake.head.x,
-                    y:snake.head.y
-                },
-                id:snake.id,
-                length: 1
-            })
+            snake.body = [{x:snake.head.x,y:snake.head.y}];
+            snake.length = 1;
         }
-    })
+    }
+    // boardCp.snakes = {}
+    // for(snake of board.snakes){
+    //     if(snake.id !== you.id){
+    //         boardCp.snakes.push({
+    //             body:{
+    //                 x:snake.head.x,
+    //                 y:snake.head.y
+    //             },
+    //             id:snake.id,
+    //             length: 1
+    //         })
+    //     }
+    // }
+    // board.snakes.foreach(function(snake){
+    //     if(snake.id !== you.id){
+    //         boardCp.snakes.push({
+    //             body:{
+    //                 x:snake.head.x,
+    //                 y:snake.head.y
+    //             },
+    //             id:snake.id,
+    //             length: 1
+    //         })
+    //     }
+    // })
     return boardCp;
 }
 
