@@ -200,23 +200,23 @@ function checkMove(move, board, you){
     return true;
 }
 
-<<<<<<< HEAD
-function snakeCollision(board, x, y){
-=======
 function snakeCollision(board, you, x, y){
->>>>>>> 064b1b7de4d2d73f5707f67f2ce001cab625859a
   for (var i = 0; i < board.snakes.length; i++){
       for (var j = 0; j < board.snakes[i].body.length; j++){
           if (board.snakes[i].body[j].x == x && board.snakes[i].body[j].y == y){
               return false;
           }
       }
+  }
+  for (var i = 0; i < you.body.length; i++){
+    if (you.body[i].x == x && you.body[i].y == y){
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
 function panicMove(board, height, width, you){
-<<<<<<< HEAD
   var x = you.body[0].x;
   var y = you.body[0].y;
 
